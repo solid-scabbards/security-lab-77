@@ -1,0 +1,19 @@
+jobs:
+  your-job-name:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for OIDC
+      contents: read # Required to checkout the repository
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::676766459861:role/github-s3-reader-OIDC
+          aws-region: us-east-1
+
+	- name: Sync main branch to S3
+        run: |
+          aws s3 sync . s3://boo-github-secops-logs-jp-2026 --exclude ".git/*" --exclude ".github/*"
